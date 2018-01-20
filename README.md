@@ -1,2 +1,3 @@
 # Java
-exer and learning
+
+### Thinking in Java
