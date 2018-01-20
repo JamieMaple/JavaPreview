@@ -1,3 +1,5 @@
+package quickstart;
+
 import java.util.Arrays;
 
 // functional way
@@ -37,7 +39,7 @@ class Main {
         return arrayToString(sort(convert(s)));
     }
 
-    static void xiXueGui() {
+    static void vampireNum() {
         System.out.println("吸血鬼数字以下：");
         for (int i = 10; i < 100; i++) {
             for (int j = i; j < 100; j++) {
@@ -56,7 +58,7 @@ class Main {
     }
 
     public static void main(String[] args) {
-        xiXueGui();
+        vampireNum();
     }
 }
 
