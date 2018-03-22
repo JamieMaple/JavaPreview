@@ -12,8 +12,7 @@ class Main {
 		Collections.addAll(list1, 1, 2, 3, 4, 5);
 		Collections.addAll(list2, 9, 8, 7, 6);
 		
-		ListIterator<Integer> it = list1.listIterator();
-		while (it.hasNext()) it.next();
+		ListIterator<Integer> it = list1.listIterator(list1.size());
 		while (it.hasPrevious()) {
 			list2.add(it.previous());
 		}
