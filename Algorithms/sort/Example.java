@@ -2,7 +2,10 @@ import edu.princeton.cs.algs4.StdOut;
 
 public class Example {
     public static void main(String[] args) {
-
+        String[] a = { "S", "O", "R", "T", "E", "X", "A", "M", "P", "L", "E" };
+        Selection.sort(a);
+        assert isSorted(a);
+        show(a);
     }
 
     private static void show(Comparable[] arr) {
@@ -14,7 +17,7 @@ public class Example {
 
     public static boolean isSorted(Comparable[] arr) {
         for (int i = 1; i < arr.length; i++) {
-            if (less(arr[i], arr[i - 1])) {
+            if (SortBase.less(arr[i], arr[i - 1])) {
                 return false;
             }
         }
