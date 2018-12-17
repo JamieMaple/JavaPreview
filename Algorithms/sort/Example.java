@@ -2,9 +2,7 @@ import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.Stopwatch;
 import edu.princeton.cs.algs4.StdRandom;
 
-public class Example {
-    public static void main(String[] args) {
-        //String[] a = { "S", "O", "R", "T", "E", "X", "A", "M", "P", "L", "E" };
+public class Example { public static void main(String[] args) { //String[] a = { "S", "O", "R", "T", "E", "X", "A", "M", "P", "L", "E" };
         //Selection.sort(a);
         //Insertion.sort(a);
         //assert isSorted(a);
@@ -107,6 +105,18 @@ class Insertion extends SortBase {
         }
     }
 
+    public static void sort(Comparable[] arr, int lo, int hi) {
+        for (int i = lo + 1; i <= hi; i++) {
+            for (int j = i; j > lo; j--) {
+                if (less(arr[j], arr[j-1])) {
+                    exch(arr, j, j-1);
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+
     public static void sortWithSentinel(Comparable[] arr) {
         //for (int i = 1; i < arr.length - 1; i++) {
             //if (less(arr[i], arr[i-1])) {
@@ -185,61 +195,128 @@ class Shell extends SortBase {
  */
 
 class Merge extends SortBase {
-    private static Comparable[] tempArr;
-
     public static void sort(Comparable[] arr) {
-        tempArr = new Comparable[arr.length];
-        sort(arr, 0, arr.length - 1);
+        Comparable[] tempArr = new Comparable[arr.length];
+        sort(arr, tempArr, 0, arr.length - 1);
     }
 
-    public static void sort(Comparable[] arr, int lo, int hi) {
+    public static void sort(Comparable[] arr, Comparable[] tempArr, int lo, int hi) {
         if (hi <= lo) {
             return;
         }
 
-        int mid = (hi + lo) / 2;
+        if (hi - lo <= 16) {
+            Insertion.sort(arr, lo, hi);
+        } else {
+            int mid = (hi + lo) / 2;
 
-        sort(arr, lo, mid);
-        sort(arr, mid + 1, hi);
+            sort(arr, tempArr, lo, mid);
+            sort(arr, tempArr, mid + 1, hi);
 
-        merge(arr, lo, mid, hi);
-    }
-
-    public static void sortToTop(Comparable[] arr) {
-        tempArr = new Comparable[arr.length];
-        for (int sz = 1; sz < arr.length; sz = sz + sz) {
-            for (int lo = 0; lo < arr.length-sz; lo += sz + sz) {
-                merge(arr, lo, lo+sz-1, Math.min(lo+sz+sz-1, arr.length-1));
+            if (less(arr[mid+1], arr[mid])) {
+                merge(arr, tempArr, lo, mid, hi);
             }
         }
     }
 
-    public static void merge(Comparable[] arr, int lo, int mid, int hi) {
+    public static void sortToTop(Comparable[] arr, Comparable[] tempArr) {
+        tempArr = new Comparable[arr.length];
+        for (int sz = 1; sz < arr.length; sz = sz + sz) {
+            for (int lo = 0; lo < arr.length-sz; lo += sz + sz) {
+                merge(arr, tempArr, lo, lo+sz-1, Math.min(lo+sz+sz-1, arr.length-1));
+            }
+        }
+    }
+
+    public static void merge(Comparable[] target, Comparable[] source, int lo, int mid, int hi) {
         int i = lo;
         int j = mid + 1;
 
-        // copy
         for (int k = lo; k <= hi; k++) {
-            tempArr[k] = arr[k];
+            source[k] = target[k];
         }
+
+        // 不稳定
+        //for (int k = lo; k <= mid; k++) {
+            //source[k] = target[k];
+        //}
+        //for (int k = mid + 1; k <= lo; k++) {
+            //source[k] = target[mid + hi - k + 1];
+        //}
+        //int i = lo, j = hi;
+        //for (int k = lo; k < hi; k++) {
+            //if (less(source[i], source[j])) {
+                //target[k] = source[i++];
+            //} else {
+                //target[k] = source[j--];
+            //}
+        //}
+
 
         for (int k = lo; k <= hi; k++) {
             if (i > mid) {
-                arr[k] = tempArr[j++];
+                target[k] = source[j++];
                 continue;
             }
 
             if (j > hi) {
-                arr[k] = tempArr[i++];
+                target[k] = source[i++];
+                continue;
+            }
+            
+            if (less(source[i], source[j])) {
+                target[k] = source[i++];
+            } else {
+                target[k] = source[j++];
+            }
+        }
+    }
+
+    public static Comparable[] merge(Comparable[] left, Comparable[] right) {
+        Comparable[] target = new Comparable[left.length + right.length];
+
+        for (int k = 0, i = 0, j = 0; k < target.length; k++) {
+            if (i >= left.length) {
+                target[k] = right[j++];
                 continue;
             }
 
-            if (less(tempArr[i], tempArr[j])) {
-                arr[k] = tempArr[i++];
+            if (j >= right.length) {
+                target[k] = left[i++];
+                continue;
+            }
+
+            if (less(left[i], right[j])) {
+                target[k] = left[i++];
             } else {
-                arr[k] = tempArr[j++];
+                target[k] = right[j++];
             }
         }
+
+        return target;
+    }
+
+    public static Comparable[] merge(Comparable[] source) {
+        Comparable[] target = null;
+
+        for (int i = 1; i < source.length; i++) {
+            if (i == 1) {
+                target = merge(new Comparable[] { source[0] }, new Comparable[] { source[1] });
+            } else {
+                target = merge(target, new Comparable[] { source[i] });
+            }
+        }
+
+        return target;
+    }
+
+    public static void main(String[] args) {
+        Comparable[] arr = { "C", "D", "L", "A", "X", "B", "E" };
+        arr = merge(arr);
+        for (Comparable item : arr) {
+            System.out.print(item + " ");
+        }
+        StdOut.println();
     }
 }
 
