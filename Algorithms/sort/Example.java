@@ -46,6 +46,8 @@ class SortCompare {
             Selection.sort(arr);
         } else if (alg.equals("Shell")) {
             Shell.sort(arr);
+        } else if (alg.equals("Merge")) {
+            Merge.sort(arr);
         } else {
             return 0;
         }
@@ -85,8 +87,7 @@ class Selection extends SortBase {
             for (int j = i + 1; j < arr.length; j++) {
                 if (less(arr[j], arr[minIndex])) {
                     minIndex = j;
-                }
-            }
+                } }
             exch(arr, i, minIndex);
         }
     }
@@ -105,18 +106,61 @@ class Insertion extends SortBase {
             }
         }
     }
+
+    public static void sortWithSentinel(Comparable[] arr) {
+        //for (int i = 1; i < arr.length - 1; i++) {
+            //if (less(arr[i], arr[i-1])) {
+                //exch(arr, i, i-1);
+            //}
+        //}
+        // 得出最小的数字
+        int exchanges = 0;
+        for (int i = arr.length - 1; i > 0; i--) {
+            if (less(arr[i], arr[i-1])) {
+                exch(arr, i, i-1);
+                exchanges++;
+            }
+        }
+        if (exchanges == 0) {
+            return;
+        }
+
+        for (int i = 2; i < arr.length; i++) {
+            Comparable v = arr[i];
+            int j = i;
+            while (less(v, arr[j-1])) {
+                arr[j] = arr[j-1];
+                j--;
+            }
+            arr[j] = v;
+        }
+    }
 }
 
 class Shell extends SortBase {
     public static void sort(Comparable[] arr) {
         int N = arr.length;
         int h = 1;
+
+        //int hLength = 0;
+        //while (h < N/3) {
+            //hLength++;
+            //h = h * 3 + 1;
+        //}
+        //int j = 1;
+        //int[] a = new int[hLength];
+        //for (int i = 0; i < hLength; i++) {
+            //a[i] = j; 
+            //j = j * 3 + 1;
+        //}
+
         while (h < N/3) {
-            h = 3 * h + 1;
+            h = h * 3 + 1;
         }
+        
         while (h >= 1) {
             for (int i = h; i < N; i++) {
-                for (int j = i; j >= h; j-= h)  {
+                for (int j = i; j >= h; j -= h) {
                     if (less(arr[j], arr[j-h])) {
                         exch(arr, j, j-h);
                     } else {
@@ -124,8 +168,83 @@ class Shell extends SortBase {
                     }
                 }
             }
-            h = h / 3;
+            h /= 3;
         }
+    }
+}
+
+/*
+ * 一共是 N 个数，即长度为 N。
+ * 一共有 n 层，n = lgN
+ * 设当前层为第 k 层(k = 0, 1, 2 ...)
+ * 当前层有 2^k 个子数组，每个数组第长度为 2^(n-k) 个数
+ * 所以层需要比较 2^k * 2^(n-k) = 2^n 次
+ * 一共 n 层，所以一共需要比较 n * 2^n 次
+ * 换算一下就是 lgN * N
+ * 
+ */
+
+class Merge extends SortBase {
+    private static Comparable[] tempArr;
+
+    public static void sort(Comparable[] arr) {
+        tempArr = new Comparable[arr.length];
+        sort(arr, 0, arr.length - 1);
+    }
+
+    public static void sort(Comparable[] arr, int lo, int hi) {
+        if (hi <= lo) {
+            return;
+        }
+
+        int mid = (hi + lo) / 2;
+
+        sort(arr, lo, mid);
+        sort(arr, mid + 1, hi);
+
+        merge(arr, lo, mid, hi);
+    }
+
+    public static void sortToTop(Comparable[] arr) {
+        tempArr = new Comparable[arr.length];
+        for (int sz = 1; sz < arr.length; sz = sz + sz) {
+            for (int lo = 0; lo < arr.length-sz; lo += sz + sz) {
+                merge(arr, lo, lo+sz-1, Math.min(lo+sz+sz-1, arr.length-1));
+            }
+        }
+    }
+
+    public static void merge(Comparable[] arr, int lo, int mid, int hi) {
+        int i = lo;
+        int j = mid + 1;
+
+        // copy
+        for (int k = lo; k <= hi; k++) {
+            tempArr[k] = arr[k];
+        }
+
+        for (int k = lo; k <= hi; k++) {
+            if (i > mid) {
+                arr[k] = tempArr[j++];
+                continue;
+            }
+
+            if (j > hi) {
+                arr[k] = tempArr[i++];
+                continue;
+            }
+
+            if (less(tempArr[i], tempArr[j])) {
+                arr[k] = tempArr[i++];
+            } else {
+                arr[k] = tempArr[j++];
+            }
+        }
+    }
+}
+
+class Quick extends SortBase {
+    public static void sort(Comparable[] arr) {
     }
 }
 
