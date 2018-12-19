@@ -1,0 +1,50 @@
+task hello {
+    doLast {
+        println 'Hello World!'
+    }
+}
+
+task upper {
+    doLast {
+        String someString = 'mY_nAme'
+        println "Original: $someString"
+        println "Upper case: ${someString.toUpperCase()}"
+    }
+}
+
+task count {
+    doLast {
+        4.times { print "$it " }
+    }
+}
+
+task intro {
+    dependsOn hello
+    doLast {
+        println "I'm Gradle"
+    }
+}
+
+// task dependenncies
+task taskX {
+    dependsOn 'taskY'
+    doLast {
+        println 'taskX'
+    }
+}
+task taskY {
+    doLast {
+        println 'taskY'
+    }
+}
+
+// dynamic tasks
+4.times { counter ->
+    task "task$counter" {
+        doLast {
+            println "task number $counter"
+        }
+    }
+}
+
+task0.dependsOn task2, task3
